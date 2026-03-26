@@ -1,0 +1,23 @@
+<div id="chatlog">
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message.chatmember }} -> {{ message.content }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No messages.</p>
+    {% endif %}
+</div>
+
+<div>
+    <form method="post" 
+        hx-post="{% url 'chat:createmessage' %}" 
+        hx-swap="beforeend" 
+        hx-target="#chatlog"
+        hx-on::after-request="this.reset()"
+    >
+        {% csrf_token %}
+        <input type='hidden' name='chatmember' value='{{ member.id }}'>
+        <input class="border-2 border-gray focus:border-blue-500 focus:outline-none" autocomplete="off" type='text' name='content'>
+        <button type='submit'>Send</button>
+    </form>
+</div>

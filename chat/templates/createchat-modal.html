@@ -1,0 +1,9 @@
+
+<form hx-post="{% url 'chat:createchat' %}" hx-swap="outerHTML" hx-target="this">
+    {% csrf_token %}
+    <div>
+        <label>Name</label>
+        <input type="text" name="chatname">
+    </div>
+    <button type="submit">Create Chat</button>
+</form>

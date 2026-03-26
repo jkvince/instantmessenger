@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load tailwind_tags %}
+    {% tailwind_css %}
+
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+</head>
+<body class="h-full">
+
+<h1 class="text-4xl font-bold text-blue-600 animate-bounce">Hello Tailwind!</h1>
+
+<h1>{{ user.username }}</h1>
+<form method="post" action="{% url 'chat:logout' %}">
+  {% csrf_token %}
+  <button type="submit">Logout</button>
+</form>
+
+<button hx-get="{% url 'chat:createchat' %}" 
+    hx-target="body" 
+    hx-swap="beforeend">Create Chat</button>
+
+<main class="flex p-3">
+    <aside class="w-1/5 m-0 border-solid border-2 flex-1">
+        {% if chats %}
+            <ul>
+                {% for chat in chats %}
+                    <li class="cursor-pointer" hx-get="{% url 'chat:loadchat' chat.id %}" hx-target="article" hx-swap="innerHTML">{{chat.name}}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No chats.</p>
+        {% endif %}
+    </aside>
+    
+    <article class="m-0 border-2 flex-1 overflow-y-auto flex flex-col justify-end items-center flex-1">
+        <p>Select a chat</p>
+    </article>
+</main>
+
+
+</body>
+
