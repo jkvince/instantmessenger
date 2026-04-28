@@ -19,6 +19,10 @@ class Chat(models.Model):
     def get_messages(self):
         return Message.objects.filter(chatmember__in=self.get_members()).order_by('datesent')
 
+    def create_chat_full(self, name, admin):
+        chat = self.model(name=name, admin=admin)
+        ChatMember.objects.create(user=admin, chat=chat)
+        return chat
 
 class ChatMember(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
