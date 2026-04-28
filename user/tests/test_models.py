@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from user.models import UserModel
-from chat.models import Chat, ChatMember, Message
+from chat.models import Chat, ChatMember
 
 class UserModelTest(TestCase):
     @classmethod
@@ -39,4 +39,5 @@ class UserModelTest(TestCase):
     def test_get_member_from_chat(self):
         query1 = self.user.get_member_from_chat(self.chat1)
         query2 = self.user.get_member_from_chat(self.chat2)
-        self.assertIn(self.chat1member, query1)
+        self.assertEqual(self.chat1member, query1)
+        self.assertEqual(self.chat2member, query2)

@@ -19,7 +19,7 @@ class Chat(models.Model):
     def get_messages(self):
         return Message.objects.filter(chatmember__in=self.get_members()).order_by('datesent')
 
-    def create_chat_full(self, name, admin):
+    def create_chat_complete(self, name, admin):
         chat = self.model(name=name, admin=admin)
         ChatMember.objects.create(user=admin, chat=chat)
         return chat
