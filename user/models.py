@@ -1,17 +1,11 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils import timezone
 from django.db import models
 import uuid
 
 from chat.models import Chat, ChatMember, Message
 
-class UserModel(AbstractUser):
-    is_online = models.BooleanField(null=False, default=False)
-
-    # Excluded
-    first_name = None
-    last_name = None
-
+class CustomUserManager(UserManager):
     def create_user(self, username, email, password):
         if not email or not username or not password:
             raise ValueError("Parameter required is missing")
@@ -21,6 +15,15 @@ class UserModel(AbstractUser):
         user.set_password(password)
         user.save(using=self.db)
         return user
+
+class UserModel(AbstractUser):
+    is_online = models.BooleanField(null=False, default=False)
+
+    # Excluded
+    first_name = None
+    last_name = None
+
+    objects = CustomUserManager()
 
     def get_all_chat_members(self):
         return ChatMember.objects.filter(user=self)

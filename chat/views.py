@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
-from django.urls import reverse
 from django.http import HttpResponse
 from django.middleware.csrf import get_token
 

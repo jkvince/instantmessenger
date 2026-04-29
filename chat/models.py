@@ -1,5 +1,13 @@
 from django.db import models
+from django.urls import reverse
+
 import uuid
+
+class ChatManager(models.Manager):
+    def create_chat_complete(self, name, admin):
+        chat = Chat.objects.create(name=name, admin=admin)
+        ChatMember.objects.create(user=admin, chat=chat)
+        return chat
 
 class Chat(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -7,22 +15,19 @@ class Chat(models.Model):
     admin = models.ForeignKey('user.UserModel', on_delete=models.CASCADE)
     datecreated = models.DateTimeField(auto_now=True)
 
+    objects = ChatManager()
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('home:detail-view', args=[str(self.id)])
+        return reverse('chat:loadchat', args=[str(self.id)])
 
     def get_members(self):
         return ChatMember.objects.filter(chat=self)
 
     def get_messages(self):
         return Message.objects.filter(chatmember__in=self.get_members()).order_by('datesent')
-
-    def create_chat_complete(self, name, admin):
-        chat = self.model(name=name, admin=admin)
-        ChatMember.objects.create(user=admin, chat=chat)
-        return chat
 
 class ChatMember(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -41,6 +46,9 @@ class ChatMember(models.Model):
 
     def get_messages(self):
         return Message.objects.filter(chatmember=self).order_by('datesent')
+
+    def new_message(self, content):
+        return Message.objects.create(chatmember=self, content=content)
 
 
 class Message(models.Model):
