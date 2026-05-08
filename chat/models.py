@@ -11,7 +11,7 @@ class ChatManager(models.Manager):
 
 class Chat(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=32, null=False)
+    name = models.CharField(max_length=128, null=False)
     admin = models.ForeignKey('user.UserModel', on_delete=models.CASCADE)
     datecreated = models.DateTimeField(auto_now=True)
 
@@ -29,11 +29,16 @@ class Chat(models.Model):
     def get_messages(self):
         return Message.objects.filter(chatmember__in=self.get_members()).order_by('datesent')
 
+    def add_new_member(self, user):
+        ChatMember.objects.create(chat=self, user=user)
+
+
 class ChatMember(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey('user.UserModel', on_delete=models.CASCADE)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     datejoined = models.DateTimeField(auto_now=True)
+    nickname = models.CharField(max_length=32, default=None, null=True, blank=True)
 
     def __str__(self):
         return self.user.username + " in " + str(self.chat)
