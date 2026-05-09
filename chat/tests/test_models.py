@@ -3,7 +3,7 @@ from django.test import TestCase
 from user.models import UserModel
 from chat.models import Chat, ChatMember, Message
 
-class ChatTest(TestCase):
+class ChatModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = UserModel.objects.create_user(
@@ -35,7 +35,7 @@ class ChatTest(TestCase):
         self.assertEqual(self.message, query[0])
 
 
-class ChatMemberTest(TestCase):
+class ChatMemberModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = UserModel.objects.create_user(
@@ -67,7 +67,7 @@ class ChatMemberTest(TestCase):
 
 
 
-class MessageTest(TestCase):
+class MessageModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = UserModel.objects.create_user(

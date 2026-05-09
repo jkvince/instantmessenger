@@ -4,8 +4,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
 from django.http import HttpResponse
-from django.middleware.csrf import get_token
-
 
 from . import models
 

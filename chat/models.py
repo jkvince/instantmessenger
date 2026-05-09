@@ -11,7 +11,7 @@ class ChatManager(models.Manager):
 
 class Chat(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=32, null=False)
+    name = models.CharField(max_length=128, null=False)
     admin = models.ForeignKey('user.UserModel', on_delete=models.CASCADE)
     datecreated = models.DateTimeField(auto_now=True)
 
