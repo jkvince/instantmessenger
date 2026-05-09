@@ -39,6 +39,8 @@ class UserModel(AbstractUser):
         except ChatMember.MultipleObjectsReturned:
             return ChatMember.MultipleObjectsReturned
 
+    def add_to_chat(self, chat):
+        ChatMember.objects.create(chat=chat, user=self)
 
 class UserChannel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

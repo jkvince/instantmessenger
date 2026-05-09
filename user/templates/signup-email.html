@@ -1,0 +1,9 @@
+<div hx-target="this" hx-swap="outerHTML" class="error">
+    <label>Email Address</label>
+    <input name="email" hx-post="{% url 'user:signupcheck' %}" hx-indicator="#ind" value="{{ email }}" aria-invalid="true">
+    <!--<img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/> -->
+    
+    {% if message %}
+    <div class='error-message' >{{ message }}</div>
+    {% endif %}
+</div> 

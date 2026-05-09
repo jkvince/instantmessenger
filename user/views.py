@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.views.generic import View
 
 from django.http import HttpResponse
@@ -47,3 +49,31 @@ class Signup(View):
         user = authenticate(request, username=username, password=password)
         login(request, user)
         return redirect('chat:home')
+
+
+class SignupValidateEmail(View):
+    def post(self, request):
+        context = {
+            'username': request.POST['username'],
+            'password': request.POST['password'],
+            'email': request.POST['email']
+        }
+
+        if not is_valid_email(context['email']):
+            context['message'] = "Please enter a valid email address"
+            return render(request, 'signup-email.html', context)
+
+        if models.UserModel.objects.filter(email=context['email']).exists():
+            context['message'] = "This email address is already in use"
+            return render(request, 'signup-email.html', context)
+
+        return render(request, 'signup-email.html', context)
+
+    
+
+def is_valid_email(email_string):
+        try:
+            validate_email(email_string)
+            return True
+        except ValidationError:
+            return False
