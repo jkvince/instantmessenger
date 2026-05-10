@@ -33,7 +33,7 @@ class AdminChat(admin.ModelAdmin):
 
 @admin.register(models.ChatMember)
 class AdminChatMember(admin.ModelAdmin):
-    list_display = ['id', 'user', 'chat', 'datejoined']
+    list_display = ['id', 'user', 'nickname', 'chat', 'datejoined']
     inlines = [MessagesInline]
 
 

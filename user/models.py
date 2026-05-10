@@ -1,53 +1,65 @@
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils import timezone
 from django.db import models
+from django.contrib.auth.validators import UnicodeUsernameValidator
 import uuid
 
 from chat.models import Chat, ChatMember, Message
 
 class CustomUserManager(UserManager):
-    def create_user(self, username, email, password):
-        if not email or not username or not password:
-            raise ValueError("Parameter required is missing")
+	def create_user(self, username, email, password):
+		if not email or not username or not password:
+			raise ValueError("Parameter required is missing")
 
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email)
-        user.set_password(password)
-        user.save(using=self.db)
-        return user
+		email = self.normalize_email(email)
+		user = self.model(username=username, email=email)
+		user.set_password(password)
+		user.save(using=self.db)
+		return user
 
 class UserModel(AbstractUser):
-    is_online = models.BooleanField(null=False, default=False)
+	is_online = models.BooleanField(null=False, default=False)
 
-    # Excluded
-    first_name = None
-    last_name = None
+	# Modified
+	username_validator = UnicodeUsernameValidator()
+	username = models.CharField(
+		max_length=64,
+		validators=[username_validator],
+		primary_key=True,
+		editable=False
+	)
+	email = models.EmailField(null=False, editable=False, unique=True)
 
-    objects = CustomUserManager()
 
-    def get_all_chat_members(self):
-        return ChatMember.objects.filter(user=self)
+	# Excluded
+	first_name = None
+	last_name = None
 
-    def get_chats(self):
-        return Chat.objects.filter(chatmember__in=self.get_all_chat_members())
+	objects = CustomUserManager()
 
-    def get_member_from_chat(self, chat):
-        try:
-            return ChatMember.objects.get(user=self, chat=chat)
-        except ChatMember.DoesNotExist:
-            return ChatMember.DoesNotExist
-        except ChatMember.MultipleObjectsReturned:
-            return ChatMember.MultipleObjectsReturned
+	def get_all_chat_members(self):
+		return ChatMember.objects.filter(user=self)
 
-    def add_to_chat(self, chat):
-        ChatMember.objects.create(chat=chat, user=self)
+	def get_chats(self):
+		return Chat.objects.filter(chatmember__in=self.get_all_chat_members())
+
+	def get_member_from_chat(self, chat):
+		try:
+			return ChatMember.objects.get(user=self, chat=chat)
+		except ChatMember.DoesNotExist:
+			return ChatMember.DoesNotExist
+		except ChatMember.MultipleObjectsReturned:
+			return ChatMember.MultipleObjectsReturned
+
+	def add_to_chat(self, chat):
+		ChatMember.objects.create(chat=chat, user=self)
 
 class UserChannel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey('user.UserModel', on_delete=models.PROTECT, editable=False)
-    websocketid = models.CharField(max_length=64, editable=False)
-    dateopened = models.DateTimeField(auto_now=True)
-    dateclosed = models.DateTimeField()
+	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+	user = models.ForeignKey('user.UserModel', on_delete=models.PROTECT, editable=False)
+	websocketid = models.CharField(max_length=64, editable=False)
+	dateopened = models.DateTimeField(auto_now=True)
+	dateclosed = models.DateTimeField()
 
-    def close(self):
-        self.dateclosed = timezone.now()
+	def close(self):
+		self.dateclosed = timezone.now()
